@@ -36,6 +36,24 @@ We will continue working with the nycflights dataset we looked at in class. **Pl
 
 First - make sure that you are reading the data correctly and doing all the data cleaning steps that we did in class. Feel free to go beyond our class work in cleaning the data if you feel the need. 
 
+```{r}
+# Reading the nycflights data
+nycfl <- read.csv("nycflights.csv")
+
+# Deleting the column x
+nycfl$X <- NULL
+
+# Factorize columns that need to be a factor
+nycfl$origin <- as.factor(nycfl$origin)
+nycfl$tailnum <- as.factor(nycfl$tailnum)
+nycfl$month <- as.factor(nycfl$month)
+nycfl$dest <- as.factor(nycfl$dest)
+nycfl$carrier <- as.factor(nycfl$carrier)
+nycfl$flight <- as.factor(nycfl$flight)
+
+```
+
+
 I now would like you to answer the following - all in their own separate R code blocks.
 
 ### Data Exploration

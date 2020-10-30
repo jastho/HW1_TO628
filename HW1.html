@@ -399,6 +399,11 @@ summary {
 <h2>Data frame basics</h2>
 <p>We will continue working with the nycflights dataset we looked at in class. <strong>Please be sure to keep the data file in the same directory as the RMD file - your project directory.</strong></p>
 <p>First - make sure that you are reading the data correctly and doing all the data cleaning steps that we did in class. Feel free to go beyond our class work in cleaning the data if you feel the need.</p>
+<pre class="r"><code># Reading the nycflights data
+nycfl &lt;- read.csv(&quot;nycflights.csv&quot;)
+
+# Deleting the column x
+nycfl$x &lt;- NULL</code></pre>
 <p>I now would like you to answer the following - all in their own separate R code blocks.</p>
 <div id="data-exploration" class="section level3">
 <h3>Data Exploration</h3>
