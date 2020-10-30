@@ -84,8 +84,13 @@ min(nycfl$air_time, na.rm = TRUE)
 ```
 The shortest flight out of any NYC airport is `r min(nycfl$air_time, na.rm = TRUE)` minutes. 
 
-- How many flights where there by United Airlines (code: UA) on Jan 12th 2013?
+- How many flights were there by United Airlines (code: UA) on Jan 12th 2013?
 
+```{r, indent = "    "}
+# Logical index looking for where carrier is UA and the date components are month 1, day 12, year 2013. nrow then counts the number of rows meeting these conditions
+nrow(nycfl[(nycfl$carrier == "UA") & (nycfl$year == 2013) & (nycfl$month == "1") & (nycfl$day == 12), ])
+```
+There were `r nrow(nycfl[(nycfl$carrier == "UA") & (nycfl$year == 2013) & (nycfl$month == "1") & (nycfl$day == 12), ])` flights by United Airlines on January 12, 2013.
 
 ### Arrival Delay
 
@@ -93,10 +98,23 @@ Lets focus on Arrival Delay.
 
 - What was the average arrival delay for all airports and all airlines combined in Jan 2013? 
 
+```{r, indent = "    "}
+# Finds the rows corresponding to January 2013 and the column corresponding to arrival delay and takes the average, ignoring NA values
+mean(nycfl[(nycfl$year == 2013) & (nycfl$month == "1"), "arr_delay"], na.rm = TRUE)
+```
+The average arrival delay for all airports and all airlines combined in January 2013 was `r round(mean(nycfl[(nycfl$year == 2013) & (nycfl$month == "1"), "arr_delay"], na.rm = TRUE), 2)` minutes.
+
 - Whats was the median arrival delay for all airports and all airlines combined in Jan 2013?
+
+```{r, indent = "    "}
+# Finds the rows corresponding to January 2013 and the column corresponding to arrival delay and finds the median, ignoring NA values
+median(nycfl[(nycfl$year == 2013) & (nycfl$month == "1"), "arr_delay"], na.rm = TRUE)
+```
+The median arrival delay for all airports and all airlines combined in January 2013 was `r median(nycfl[(nycfl$year == 2013) & (nycfl$month == "1"), "arr_delay"], na.rm = TRUE)` minutes.
 
 Based on your answers to the two questions above, what can you say about the distribution of arrival delays? Provide your answer in a text paragraph form.
 
+Seeing as the mean of `r round(mean(nycfl[(nycfl$year == 2013) & (nycfl$month == "1"), "arr_delay"], na.rm = TRUE), 2)` minutes is greater than the median of `r median(nycfl[(nycfl$year == 2013) & (nycfl$month == "1"), "arr_delay"], na.rm = TRUE)` minutes, the distribution of arrival delays is right skewed. Also, it can be seen that more than half of the flights arrived early in January 2013 as the median is negative.
 
 ### Airline Performance
 
@@ -104,9 +122,22 @@ Lets see if all airlines are equally terrible as far as flight arrival delays ar
 
 - Calculate average arrival delays by airline (Hint: look up the command `tapply`)
 
+```{r, indent = "    "}
+# Computes the mean arrival dely by airline, ignoring NA values
+tapply(nycfl$arr_delay, nycfl$carrier, mean, na.rm = TRUE)
+```
+
+
 - Draw a Bar Plot of Average Arrival Delays for all the Airlines (Hint: command for making a Bar Plot is simply `barplot`)
 
+```{r, indent = "    "}
+barplot(tapply(nycfl$arr_delay, nycfl$carrier, mean, na.rm = TRUE), main = "Average Arrival Delays by Airline", xlab = "Airline", ylab = "Average Delay (min)", ylim = c(-10, 25), cex.names = 0.8)
+```
+
+
 - Which airline has the highest average arrival delay? Which airline has the smallest average arrival delay? Are there airlines that actually have negative average delay? Provide answer to this question in a text paragraph form using **inline R code**.
+
+The airline with the highest average arrival delay is 
 
 ### Air Gain
 
