@@ -62,9 +62,27 @@ Let's first do some simple exploration of this data.
 
 - How many airlines are there? (Hint: `levels` and `length` can be useful here)
 
+```{r, indent = "    "}
+# Levels provides the unique factors and length computes the number of those unique factors
+length(levels(nycfl$carrier))
+```
+There are `r length(levels(nycfl$carrier))` airlines.
+
 - How many flights there were by the airline with code `OO`? (Hint: `nrow` can be useful here along with logical indexing)
 
+```{r, indent = "    "}
+# The logical indexing finds the rows where the carrier is OO and nrow sums the number of rows meeting that condition
+nrow(nycfl[nycfl$carrier == "OO", ])
+```
+There were `r nrow(nycfl[nycfl$carrier == "OO", ])` flights by the airline with code `OO`.
+
 - How long is the shortest flight out of any NYC airport? (Hint: `min` can be useful, remember to handle `NA` values)
+
+```{r, indent = "    "}
+# Find the minimum air time while ignoring NA values
+min(nycfl$air_time, na.rm = TRUE)
+```
+The shortest flight out of any NYC airport is `r min(nycfl$air_time, na.rm = TRUE)` minutes. 
 
 - How many flights where there by United Airlines (code: UA) on Jan 12th 2013?
 

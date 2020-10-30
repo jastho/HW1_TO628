@@ -403,15 +403,35 @@ summary {
 nycfl &lt;- read.csv(&quot;nycflights.csv&quot;)
 
 # Deleting the column x
-nycfl$x &lt;- NULL</code></pre>
+nycfl$X &lt;- NULL
+
+# Factorize columns that need to be a factor
+nycfl$origin &lt;- as.factor(nycfl$origin)
+nycfl$tailnum &lt;- as.factor(nycfl$tailnum)
+nycfl$month &lt;- as.factor(nycfl$month)
+nycfl$dest &lt;- as.factor(nycfl$dest)
+nycfl$carrier &lt;- as.factor(nycfl$carrier)
+nycfl$flight &lt;- as.factor(nycfl$flight)</code></pre>
 <p>I now would like you to answer the following - all in their own separate R code blocks.</p>
 <div id="data-exploration" class="section level3">
 <h3>Data Exploration</h3>
 <p>Let’s first do some simple exploration of this data.</p>
 <ul>
-<li><p>How many airlines are there? (Hint: <code>levels</code> and <code>length</code> can be useful here)</p></li>
-<li><p>How many flights there were by the airline with code <code>OO</code>? (Hint: <code>nrow</code> can be useful here along with logical indexing)</p></li>
-<li><p>How long is the shortest flight out of any NYC airport? (Hint: <code>min</code> can be useful, remember to handle <code>NA</code> values)</p></li>
+<li><p>How many airlines are there? (Hint: <code>levels</code> and <code>length</code> can be useful here)</p>
+<pre class="r"><code># Levels provides the unique factors and length computes the number of those unique factors
+length(levels(nycfl$carrier))</code></pre>
+<pre><code>## [1] 16</code></pre>
+<p>There are 16 airlines.</p></li>
+<li><p>How many flights there were by the airline with code <code>OO</code>? (Hint: <code>nrow</code> can be useful here along with logical indexing)</p>
+<pre class="r"><code># The logical indexing finds the rows where the carrier is OO and nrow sums the number of rows meeting that condition
+nrow(nycfl[nycfl$carrier == &quot;OO&quot;, ])</code></pre>
+<pre><code>## [1] 32</code></pre>
+<p>There were 32 flights by the airline with code <code>OO</code>.</p></li>
+<li><p>How long is the shortest flight out of any NYC airport? (Hint: <code>min</code> can be useful, remember to handle <code>NA</code> values)</p>
+<pre class="r"><code># Find the minimum air time while ignoring NA values
+min(nycfl$air_time, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 20</code></pre>
+<p>The shortest flight out of any NYC airport is 20 minutes.</p></li>
 <li><p>How many flights where there by United Airlines (code: UA) on Jan 12th 2013?</p></li>
 </ul>
 </div>
