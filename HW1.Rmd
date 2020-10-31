@@ -131,13 +131,14 @@ tapply(nycfl$arr_delay, nycfl$carrier, mean, na.rm = TRUE)
 - Draw a Bar Plot of Average Arrival Delays for all the Airlines (Hint: command for making a Bar Plot is simply `barplot`)
 
 ```{r, indent = "    "}
-barplot(tapply(nycfl$arr_delay, nycfl$carrier, mean, na.rm = TRUE), main = "Average Arrival Delays by Airline", xlab = "Airline", ylab = "Average Delay (min)", ylim = c(-10, 25), cex.names = 0.8)
+avgArrDelAirline <- tapply(nycfl$arr_delay, nycfl$carrier, mean, na.rm = TRUE)
+barplot(avgArrDelAirline, main = "Average Arrival Delays by Airline", xlab = "Airline", ylab = "Average Delay (min)", ylim = c(-10, 25), cex.names = 0.8)
 ```
 
 
 - Which airline has the highest average arrival delay? Which airline has the smallest average arrival delay? Are there airlines that actually have negative average delay? Provide answer to this question in a text paragraph form using **inline R code**.
-
-The airline with the highest average arrival delay is 
+<br/><br/>
+The airline with the highest average arrival delay is `r rownames(avgArrDelAirline)[which.max(avgArrDelAirline)]`. The airline with the smallest average arrival delay is `r rownames(avgArrDelAirline)[which.min(avgArrDelAirline)]`.
 
 ### Air Gain
 
