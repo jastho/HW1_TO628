@@ -132,25 +132,70 @@ tapply(nycfl$arr_delay, nycfl$carrier, mean, na.rm = TRUE)
 
 ```{r, indent = "    "}
 avgArrDelAirline <- tapply(nycfl$arr_delay, nycfl$carrier, mean, na.rm = TRUE)
-barplot(avgArrDelAirline, main = "Average Arrival Delays by Airline", xlab = "Airline", ylab = "Average Delay (min)", ylim = c(-10, 25), cex.names = 0.8)
+barplot(avgArrDelAirline, main = "Average Arrival Delays by Airline", xlab = "Airline", ylab = "Average Delay (minutes)", ylim = c(-10, 25), cex.names = 0.8)
 ```
 
 
 - Which airline has the highest average arrival delay? Which airline has the smallest average arrival delay? Are there airlines that actually have negative average delay? Provide answer to this question in a text paragraph form using **inline R code**.
 <br/><br/>
-The airline with the highest average arrival delay is `r rownames(avgArrDelAirline)[which.max(avgArrDelAirline)]`. The airline with the smallest average arrival delay is `r rownames(avgArrDelAirline)[which.min(avgArrDelAirline)]`.
+The airline with the highest average arrival delay is `r rownames(avgArrDelAirline)[which.max(avgArrDelAirline)]`. The airline with the smallest average arrival delay is `r rownames(avgArrDelAirline)[which.min(avgArrDelAirline)]`. The airlines with negative average arrival delays are `r rownames(avgArrDelAirline)[which(avgArrDelAirline < 0)]`.
 
 ### Air Gain
 
-Create a new column named airgain such that airgain = (departure delay - arrival delay) : this is the amount of delay a flight made up while in air.
+Create a new column named airgain such that airgain = (departure delay - arrival delay): this is the amount of delay a flight made up while in air.
+
+```{r}
+# Computes the airgain for each flight
+nycfl$airgain <- (nycfl$dep_delay - nycfl$arr_delay)
+```
+
 
 a) Explore airgain data - calculate suitable descriptive statistics and appropriate graphics to better understand this data. This part is open ended - you do what you feel works best for you.
+
+```{r, indent = "    "}
+# Computes the average airgain
+avgAirgain = mean(nycfl$airgain, na.rm = TRUE)
+medAirgain = median(nycfl$airgain, na.rm = TRUE)
+
+# Computes number of flights with departure delay
+numFlWDepDelay <- nrow(nycfl[nycfl$dep_delay > 0, ])
+
+# Computes number of flights with departure delay and airgain
+numFlWDepDelayAirgain <- nrow(nycfl[(nycfl$dep_delay > 0) & (nycfl$airgain > 0), ])
+
+# Computes number of flights with departure delay, airgain, and no arrival delay
+numFlWDepDelAirgainNoArrDel <- nrow(nycfl[(nycfl$dep_delay > 0) & (nycfl$airgain > 0) & (nycfl$arr_delay <= 0), ])
+
+# Compute average airgain by airline
+avgAirgainAirline <- tapply(nycfl$airgain, nycfl$carrier, mean, na.rm = TRUE)
+# Compute average distance by airline
+avgDistAirline <- tapply(nycfl$distance, nycfl$carrier, mean, na.rm = TRUE)
+```
+The average airgain across airlines was `r round(avgAirgain, 2)` minutes with a median airgain of `r medAirgain` minutes. The average airgain by airline is shown in a plot below.
+<br/><br/>
+In this dataset, `r round(numFlWDepDelay/nrow(nycfl)*100, 1)`% of flights had a departure delay. Of the delayed flights, `r round(numFlWDepDelayAirgain/numFlWDepDelay*100, 1)`% of them made up time in the air. Additionally, of the flights with a departure delay, `r round(numFlWDepDelAirgainNoArrDel/numFlWDepDelay*100, 1)`% of them had no arrival delay or arrived early, meaning the airgain was sufficient to ensure an on-time or early arrival.
+<br/><br/>
+```{r, indent = "    "}
+barplot(avgAirgainAirline, main = "Average Airgain by Airline", xlab = "Airline", ylab = "Average Airgain (minutes)", cex.names = 0.8, ylim = c(-5, 20))
+
+barplot(avgDistAirline, main = "Average Distance Flown by Airline", xlab = "Airline", ylab = "Average Distance (miles)", cex.names = 0.8, ylim = c(0, 5000))
+```
+<br/>
+From the Average Airgain by Airline and Average Distance Flown by Airline plots, one can see that the three airlines with the largest average airgains also fly the longest average distances. Intuitively, this makes sense as flying a longer distance allows more opportunity to make time up.
 
 b) Answer the questions:
 
   - do airlines actually gain any time when in air on average? 
+  <br/>
+  Based on the average airgain across airlines of `r round(avgAirgain, 2)` minutes, airlines do actually gain time when in the air on average.  Also, in the Average Airgain by Airline plot above, one can see that most airlines have a positive airgain.
 
   - Calculate average airgain for different airlines - which airlines do a better job, which do a worse job? 
+  <br/>
+```{r, indent = "    "}
+# Repeated from above
+tapply(nycfl$airgain, nycfl$carrier, mean, na.rm = TRUE)
+```
+  Average Airgain by Airline is plotted above. Most airlines have a positive average airgain, with AS, HA, and VX having the largest average airgains. F9, FL, and MQ have negative average airgains, meaning that they often lose time in the air. Some of the success and failure surrounding airgains could potentially be attributed to the average distance that these airlines fly. Flying a larger distance allows more opportunity to make up time in the air, and the opposite is true for shorter flights.
 
 ### Merging Data Frames
 
@@ -160,9 +205,35 @@ You can get detailed information about the physical planes in our dataset in thi
 
 a) Read the `planes.csv` file using `read.csv` command. Do any data cleaning necessary.
 
+```{r, indent = "    "}
+# Reads in the planes data set
+plane <- read.csv("planes.csv")
+plane$X <- NULL
+
+# Factorizes columns that need to be a factor
+plane$tailnum <- as.factor(plane$tailnum)
+plane$year <- as.factor(plane$year)
+plane$type <- as.factor(plane$type)
+plane$manufacturer <- as.factor(plane$manufacturer)
+plane$model <- as.factor(plane$model)
+plane$engines <- as.factor(plane$engines)
+plane$seats <- as.factor(plane$seats)
+plane$engine <- as.factor(plane$engine)
+plane$speed <- as.factor(plane$speed)
+```
+
+
 b) Merge the flights data and the planes data using the `merge` command. You should do the merge on the common column named `tailnum`. *getting this right may need some trial and error and getting some help*.
 
+```{r,indent = "    "}
+# Merges the flight and plane datasets using the tailnum column
+nycPlane <- merge(nycfl, plane, by = "tailnum")
+```
+
+
 c) Now that you have a merged dataset, think of what interesting questions that you can ask that can be answered using the merged dataset. You are asked to pose five interesting questions and answer them. (For example: who are the top 10 manufacturers of planes that fly out of NYC airports?) **Be creative. Be bold. Ask questions that you would want to know answers to even if you were not doing this for a HW. **
+<br/><br/>
+c.1. asdfasf asdfasdfasdf fdas
 
 ### Making Your HTML Look Nice
 
