@@ -212,14 +212,19 @@ plane$X <- NULL
 
 # Factorizes columns that need to be a factor
 plane$tailnum <- as.factor(plane$tailnum)
-plane$year <- as.factor(plane$year)
 plane$type <- as.factor(plane$type)
 plane$manufacturer <- as.factor(plane$manufacturer)
 plane$model <- as.factor(plane$model)
 plane$engines <- as.factor(plane$engines)
-plane$seats <- as.factor(plane$seats)
 plane$engine <- as.factor(plane$engine)
 plane$speed <- as.factor(plane$speed)
+plane$seats <- as.factor(plane$seats)
+
+# Reduce manufacturer list using common names
+levels(plane$manufacturer)[levels(plane$manufacturer)=="AIRBUS INDUSTRIE"] <- "AIRBUS"
+levels(plane$manufacturer)[levels(plane$manufacturer)=="CANADAIR LTD"] <- "CANADAIR"
+levels(plane$manufacturer)[levels(plane$manufacturer)=="MCDONNELL DOUGLAS AIRCRAFT CO"] <- "MCDONNELL DOUGLAS"
+levels(plane$manufacturer)[levels(plane$manufacturer)=="MCDONNELL DOUGLAS CORPORATION"] <- "MCDONNELL DOUGLAS"
 ```
 
 
@@ -233,7 +238,38 @@ nycPlane <- merge(nycfl, plane, by = "tailnum")
 
 c) Now that you have a merged dataset, think of what interesting questions that you can ask that can be answered using the merged dataset. You are asked to pose five interesting questions and answer them. (For example: who are the top 10 manufacturers of planes that fly out of NYC airports?) **Be creative. Be bold. Ask questions that you would want to know answers to even if you were not doing this for a HW. **
 <br/><br/>
-c.1. asdfasf asdfasdfasdf fdas
+c.1) What percent of the flights out of NYC are on aircraft that is 10 years or older?
+```{r, indent = "    "}
+# Computes the age of the aircraft in 2013
+aircraftAge = 2013 - nycPlane$year.y
+# Adds the number of instances when the flight's aircraft was 10 years or older
+numAircraft10Older = sum(aircraftAge>=10, na.rm = TRUE)
+```
+`r round(numAircraft10Older/nrow(nycPlane)*100, 1)`% of flights out of NYC are on an aircraft that is 10 years or older.
+<br/><br/>
+c.2) What is the average distance of a flight from NYC grouped by airplane seating capacity?
+```{r, indent = "    "}
+# Computes average flight distance for each seating capacity
+distBySeats = tapply(nycPlane$distance, nycPlane$seats, mean, na.rm = TRUE)
+barplot(distBySeats, main = "Average Distance Flown Grouped by Aircraft Seating Capacity", xlab = "Seating Capacity", ylab = "Average Distance (miles)", cex.names = 0.5, ylim = c(0,6000))
+```
+<br/>
+From this plot it can be seen that there is a loose trend that higher capacity aircraft fly longer distances on average. There are definitely several exceptions to this trend.
+<br/><br/>
+c.3) Are Boeing planes delayed longer than Airbus planes?
+```{r, indent = "    "}
+# Computes the average delay by each manufacturer type
+delayByManuf = tapply(nycPlane$dep_delay, nycPlane$manufacturer, mean, na.rm = TRUE)
+# Gets the values of the delays for Boeing and Airbus
+BoeingDelay = delayByManuf[manufacturer="BOEING"]
+AirbusDelay = delayByManuf[manufacturer="AIRBUS"]
+
+```
+The average delay for Boeing aircraft flying out of NYC is `r round(BoeingDelay, 1)` minutes. The average delay for Airbus aircraft flying out of NYC is `r round(AirbusDelay, 1)` minutes. The average delays are very similar, but technically Boeing planes are delayed longer than Airbus planes.
+<br/><br/>
+c.4)
+
+
 
 ### Making Your HTML Look Nice
 
