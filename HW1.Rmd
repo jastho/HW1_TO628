@@ -3,8 +3,12 @@ title: "Homework Assignment 1"
 author: "Jason Thompson"
 date: 'Assigned: Oct 24, 2020, Due Sun Nov 01, 2020 11:59PM'
 output:
-  html_document: default
-  pdf_document: default
+  html_document:
+    toc: yes
+    toc_float: yes
+    code_folding: hide
+  pdf_document:
+    toc: yes
 ---
 
 ## HW-1 Instructions
@@ -267,8 +271,39 @@ AirbusDelay = delayByManuf[manufacturer="AIRBUS"]
 ```
 The average delay for Boeing aircraft flying out of NYC is `r round(BoeingDelay, 1)` minutes. The average delay for Airbus aircraft flying out of NYC is `r round(AirbusDelay, 1)` minutes. The average delays are very similar, but technically Boeing planes are delayed longer than Airbus planes.
 <br/><br/>
-c.4)
+c.4) What aircraft (by tailnumber) had the most flights out of NYC? What airline operates that aircraft? What kind of aircraft is it?
+```{r, indent = "    "}
+library(dplyr)
+# Counts the number of occurrences of a tailnumber
+byTailNum <- nycPlane %>% count(tailnum)
+# Gets tail number with most flights
+mostFlightTailnum <- byTailNum[byTailNum$n == max(byTailNum$n), "tailnum"]
 
+# Finds the carrier associated with that tail number
+carrierMostFlight <- nycPlane[nycPlane$tailnum == mostFlightTailnum, "carrier"]
+manufMostFlight <- nycPlane[nycPlane$tailnum == mostFlightTailnum, "manufacturer"]
+modelMostFlight <- nycPlane[nycPlane$tailnum == mostFlightTailnum, "model"]
+```
+The tailnumber with the most flights out of NYC was `r mostFlightTailnum`, with `r max(byTailNum$n)` flights. The aicraft is operated by the carrier `r carrierMostFlight[1]`. The aircraft is a `r modelMostFlight[1]` manufactured by `r manufMostFlight[1]`.
+<br/><br/>
+c.5) What plane model has the fastest average speed on a flight originating from NYC? What is the average speed?
+```{r, indent = "    "}
+# Computes average speed of the aicraft by dividing distance by airtime in hours
+nycPlane$avgSpeed <- (nycPlane$distance/(nycPlane$air_time/60))
+
+# Computes average of speed by aircraft model
+avgSpeedModel <- tapply(nycPlane$avgSpeed, nycPlane$model, mean, na.rm = TRUE)
+
+# Gets the max speed
+maxAvgSpeed <- max(avgSpeedModel)
+
+# Gets model name
+modelMaxAvgSpeed <- rownames(avgSpeedModel)[which.max(avgSpeedModel)]
+
+# Gets manufacturer
+manufMaxAvgSpeed <- nycPlane[nycPlane$model == modelMaxAvgSpeed, "manufacturer"]
+```
+The plane model with the fastest average speed on a flight originating from NYC is a `r manufMaxAvgSpeed[1]` `r modelMaxAvgSpeed`, with an average speed of `r round(maxAvgSpeed)` mph.
 
 
 ### Making Your HTML Look Nice
